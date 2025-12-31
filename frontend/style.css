@@ -1,0 +1,108 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  min-height: 100vh;
+  /* Background image with subtle dark overlay */
+  background:
+    linear-gradient(rgba(5, 7, 11, 0.7), rgba(5, 7, 11, 0.9)),
+    url("image/back.jpg") center center / cover no-repeat fixed;
+  color: #f5f7fb;
+}
+
+h2 {
+  margin-top: 20px;
+  color: #f5f7fb;
+  letter-spacing: 0.5px;
+}
+
+.game-container {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+#board {
+  width: 400px;
+  height: 400px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+}
+
+#sidebar {
+  width: 180px;
+  max-height: 400px;
+  background: rgba(5, 7, 11, 0.85);
+  border-radius: 4px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  padding: 12px;
+  text-align: left;
+  overflow-y: auto;
+}
+
+#sidebar h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #e0e3ec;
+}
+
+#moves-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #cfd3e0;
+}
+
+#players-list {
+  list-style: none;
+  margin: 4px 0 0 0;
+  padding: 0;
+  font-size: 13px;
+  color: #cfd3e0;
+}
+
+#players-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+#players-list button {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: none;
+  background: #4f46e5;
+  color: #f9fafb;
+  cursor: pointer;
+}
+
+#players-list button:hover {
+  background: #4338ca;
+}
+
+#status {
+  margin-top: 24px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #e0e3ec;
+  min-height: 25px;
+}
+
+.file {
+  color: #fdfdfd;
+}
+
+.piece-black {
+  color: #111827;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.piece-white {
+  color: #f9fafb;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}

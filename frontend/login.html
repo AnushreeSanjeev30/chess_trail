@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Login · Real-Time Chess</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .auth-container {
+      max-width: 360px;
+      margin: 80px auto;
+      background: rgba(5, 7, 11, 0.9);
+      border-radius: 6px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+      padding: 24px 24px 20px 24px;
+      text-align: left;
+      color: #f5f7fb;
+    }
+    .auth-container h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+    .auth-container label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .auth-container input[type="text"],
+    .auth-container input[type="password"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #f9fafb;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+    .auth-container button {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: none;
+      background: #4f46e5;
+      color: #f9fafb;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .auth-container button:hover {
+      background: #4338ca;
+    }
+    .auth-toggle {
+      margin-top: 10px;
+      font-size: 13px;
+      text-align: center;
+      color: #d1d5db;
+      cursor: pointer;
+    }
+    .auth-error {
+      color: #fca5a5;
+      font-size: 13px;
+      min-height: 18px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="auth-title">Login</h2>
+    <div class="auth-error" id="auth-error"></div>
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" />
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" />
+
+    <label>Preferred color</label>
+    <div style="margin-bottom: 10px; font-size: 13px;">
+      <label><input type="radio" name="color" value="any" checked /> Auto</label>
+      <label style="margin-left: 10px;"><input type="radio" name="color" value="w" /> White</label>
+      <label style="margin-left: 10px;"><input type="radio" name="color" value="b" /> Black</label>
+    </div>
+
+    <button id="auth-submit">Login</button>
+    <div class="auth-toggle" id="auth-toggle">Don't have an account? Sign up</div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    let mode = "login"; // or "signup"
+
+    const titleEl = document.getElementById("auth-title");
+    const errorEl = document.getElementById("auth-error");
+    const submitBtn = document.getElementById("auth-submit");
+    const toggleEl = document.getElementById("auth-toggle");
+    const usernameEl = document.getElementById("username");
+    const passwordEl = document.getElementById("password");
+    const colorInputs = document.querySelectorAll('input[name="color"]');
+
+    function setMode(next) {
+      mode = next;
+      if (mode === "login") {
+        titleEl.textContent = "Login";
+        submitBtn.textContent = "Login";
+        toggleEl.textContent = "Don't have an account? Sign up";
+      } else {
+        titleEl.textContent = "Sign up";
+        submitBtn.textContent = "Create account";
+        toggleEl.textContent = "Already have an account? Login";
+      }
+      errorEl.textContent = "";
+    }
+
+    toggleEl.addEventListener("click", () => {
+      setMode(mode === "login" ? "signup" : "login");
+    });
+
+    async function handleSubmit() {
+      const username = usernameEl.value.trim();
+      const password = passwordEl.value;
+      errorEl.textContent = "";
+
+      let preferredColor = "any";
+      colorInputs.forEach((input) => {
+        if (input.checked) {
+          preferredColor = input.value;
+        }
+      });
+
+      if (!username || !password) {
+        errorEl.textContent = "Please enter username and password";
+        return;
+      }
+
+      try {
+        if (mode === "signup") {
+          const res = await fetch(`${API_BASE}/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            errorEl.textContent = data.detail || "Signup failed";
+            return;
+          }
+          // Auto-switch to login on successful signup
+          setMode("login");
+          errorEl.textContent = "Account created. Please login.";
+          return;
+        } else {
+          const res = await fetch(`${API_BASE}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            errorEl.textContent = data.detail || "Login failed";
+            return;
+          }
+          const data = await res.json();
+          // Store user in localStorage
+          window.localStorage.setItem("chessUser", JSON.stringify(data));
+          window.localStorage.setItem("preferredColor", preferredColor);
+          window.location.href = "index.html";
+        }
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "Network error";
+      }
+    }
+
+    submitBtn.addEventListener("click", handleSubmit);
+    passwordEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        handleSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
